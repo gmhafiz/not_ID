@@ -40,13 +40,13 @@ func (uc *UserCreate) SetID(u uint64) *UserCreate {
 }
 
 // SetSessionID sets the "session" edge to the Session entity by ID.
-func (uc *UserCreate) SetSessionID(id int) *UserCreate {
+func (uc *UserCreate) SetSessionID(id string) *UserCreate {
 	uc.mutation.SetSessionID(id)
 	return uc
 }
 
 // SetNillableSessionID sets the "session" edge to the Session entity by ID if the given value is not nil.
-func (uc *UserCreate) SetNillableSessionID(id *int) *UserCreate {
+func (uc *UserCreate) SetNillableSessionID(id *string) *UserCreate {
 	if id != nil {
 		uc = uc.SetSessionID(*id)
 	}
@@ -146,7 +146,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Columns: []string{user.SessionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

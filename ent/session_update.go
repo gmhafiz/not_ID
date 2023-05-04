@@ -29,12 +29,6 @@ func (su *SessionUpdate) Where(ps ...predicate.Session) *SessionUpdate {
 	return su
 }
 
-// SetToken sets the "token" field.
-func (su *SessionUpdate) SetToken(s string) *SessionUpdate {
-	su.mutation.SetToken(s)
-	return su
-}
-
 // SetUserID sets the "user_id" field.
 func (su *SessionUpdate) SetUserID(u uint64) *SessionUpdate {
 	su.mutation.SetUserID(u)
@@ -105,16 +99,13 @@ func (su *SessionUpdate) ExecX(ctx context.Context) {
 }
 
 func (su *SessionUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(session.Table, session.Columns, sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(session.Table, session.Columns, sqlgraph.NewFieldSpec(session.FieldID, field.TypeString))
 	if ps := su.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := su.mutation.Token(); ok {
-		_spec.SetField(session.FieldToken, field.TypeString, value)
 	}
 	if value, ok := su.mutation.CreatedAt(); ok {
 		_spec.SetField(session.FieldCreatedAt, field.TypeTime, value)
@@ -166,12 +157,6 @@ type SessionUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *SessionMutation
-}
-
-// SetToken sets the "token" field.
-func (suo *SessionUpdateOne) SetToken(s string) *SessionUpdateOne {
-	suo.mutation.SetToken(s)
-	return suo
 }
 
 // SetUserID sets the "user_id" field.
@@ -257,7 +242,7 @@ func (suo *SessionUpdateOne) ExecX(ctx context.Context) {
 }
 
 func (suo *SessionUpdateOne) sqlSave(ctx context.Context) (_node *Session, err error) {
-	_spec := sqlgraph.NewUpdateSpec(session.Table, session.Columns, sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(session.Table, session.Columns, sqlgraph.NewFieldSpec(session.FieldID, field.TypeString))
 	id, ok := suo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Session.id" for update`)}
@@ -281,9 +266,6 @@ func (suo *SessionUpdateOne) sqlSave(ctx context.Context) (_node *Session, err e
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := suo.mutation.Token(); ok {
-		_spec.SetField(session.FieldToken, field.TypeString, value)
 	}
 	if value, ok := suo.mutation.CreatedAt(); ok {
 		_spec.SetField(session.FieldCreatedAt, field.TypeTime, value)

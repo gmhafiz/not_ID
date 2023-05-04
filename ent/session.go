@@ -17,9 +17,7 @@ import (
 type Session struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
-	// Token holds the value of the "token" field.
-	Token string `json:"token,omitempty"`
+	ID string `json:"id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID *uint64 `json:"user_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -57,9 +55,9 @@ func (*Session) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case session.FieldID, session.FieldUserID:
+		case session.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case session.FieldToken:
+		case session.FieldID:
 			values[i] = new(sql.NullString)
 		case session.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -79,16 +77,10 @@ func (s *Session) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case session.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
-			}
-			s.ID = int(value.Int64)
-		case session.FieldToken:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field token", values[i])
+				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
-				s.Token = value.String
+				s.ID = value.String
 			}
 		case session.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -144,9 +136,6 @@ func (s *Session) String() string {
 	var builder strings.Builder
 	builder.WriteString("Session(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", s.ID))
-	builder.WriteString("token=")
-	builder.WriteString(s.Token)
-	builder.WriteString(", ")
 	if v := s.UserID; v != nil {
 		builder.WriteString("user_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))

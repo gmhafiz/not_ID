@@ -18,6 +18,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// EdgeSession holds the string denoting the session edge name in mutations.
 	EdgeSession = "session"
+	// SessionFieldID holds the string denoting the ID field of the Session.
+	SessionFieldID = "token"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// SessionTable is the table that holds the session relation/edge.
@@ -73,7 +75,7 @@ func BySessionField(field string, opts ...sql.OrderTermOption) OrderOption {
 func newSessionStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SessionInverseTable, FieldID),
+		sqlgraph.To(SessionInverseTable, SessionFieldID),
 		sqlgraph.Edge(sqlgraph.O2O, false, SessionTable, SessionColumn),
 	)
 }

@@ -34,8 +34,7 @@ type SessionMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
-	token         *string
+	id            *string
 	created_at    *time.Time
 	clearedFields map[string]struct{}
 	user          *uint64
@@ -65,7 +64,7 @@ func newSessionMutation(c config, op Op, opts ...sessionOption) *SessionMutation
 }
 
 // withSessionID sets the ID field of the mutation.
-func withSessionID(id int) sessionOption {
+func withSessionID(id string) sessionOption {
 	return func(m *SessionMutation) {
 		var (
 			err   error
@@ -115,9 +114,15 @@ func (m SessionMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Session entities.
+func (m *SessionMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *SessionMutation) ID() (id int, exists bool) {
+func (m *SessionMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -128,12 +133,12 @@ func (m *SessionMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *SessionMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *SessionMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -141,42 +146,6 @@ func (m *SessionMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetToken sets the "token" field.
-func (m *SessionMutation) SetToken(s string) {
-	m.token = &s
-}
-
-// Token returns the value of the "token" field in the mutation.
-func (m *SessionMutation) Token() (r string, exists bool) {
-	v := m.token
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldToken returns the old "token" field's value of the Session entity.
-// If the Session object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldToken(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldToken is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldToken requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldToken: %w", err)
-	}
-	return oldValue.Token, nil
-}
-
-// ResetToken resets all changes to the "token" field.
-func (m *SessionMutation) ResetToken() {
-	m.token = nil
 }
 
 // SetUserID sets the "user_id" field.
@@ -324,10 +293,7 @@ func (m *SessionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SessionMutation) Fields() []string {
-	fields := make([]string, 0, 3)
-	if m.token != nil {
-		fields = append(fields, session.FieldToken)
-	}
+	fields := make([]string, 0, 2)
 	if m.user != nil {
 		fields = append(fields, session.FieldUserID)
 	}
@@ -342,8 +308,6 @@ func (m *SessionMutation) Fields() []string {
 // schema.
 func (m *SessionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case session.FieldToken:
-		return m.Token()
 	case session.FieldUserID:
 		return m.UserID()
 	case session.FieldCreatedAt:
@@ -357,8 +321,6 @@ func (m *SessionMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *SessionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case session.FieldToken:
-		return m.OldToken(ctx)
 	case session.FieldUserID:
 		return m.OldUserID(ctx)
 	case session.FieldCreatedAt:
@@ -372,13 +334,6 @@ func (m *SessionMutation) OldField(ctx context.Context, name string) (ent.Value,
 // type.
 func (m *SessionMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case session.FieldToken:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetToken(v)
-		return nil
 	case session.FieldUserID:
 		v, ok := value.(uint64)
 		if !ok {
@@ -454,9 +409,6 @@ func (m *SessionMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *SessionMutation) ResetField(name string) error {
 	switch name {
-	case session.FieldToken:
-		m.ResetToken()
-		return nil
 	case session.FieldUserID:
 		m.ResetUserID()
 		return nil
@@ -550,7 +502,7 @@ type UserMutation struct {
 	name           *string
 	created_at     *time.Time
 	clearedFields  map[string]struct{}
-	session        *int
+	session        *string
 	clearedsession bool
 	done           bool
 	oldValue       func(context.Context) (*User, error)
@@ -734,7 +686,7 @@ func (m *UserMutation) ResetCreatedAt() {
 }
 
 // SetSessionID sets the "session" edge to the Session entity by id.
-func (m *UserMutation) SetSessionID(id int) {
+func (m *UserMutation) SetSessionID(id string) {
 	m.session = &id
 }
 
@@ -749,7 +701,7 @@ func (m *UserMutation) SessionCleared() bool {
 }
 
 // SessionID returns the "session" edge ID in the mutation.
-func (m *UserMutation) SessionID() (id int, exists bool) {
+func (m *UserMutation) SessionID() (id string, exists bool) {
 	if m.session != nil {
 		return *m.session, true
 	}
@@ -759,7 +711,7 @@ func (m *UserMutation) SessionID() (id int, exists bool) {
 // SessionIDs returns the "session" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // SessionID instead. It exists only for internal usage by the builders.
-func (m *UserMutation) SessionIDs() (ids []int) {
+func (m *UserMutation) SessionIDs() (ids []string) {
 	if id := m.session; id != nil {
 		ids = append(ids, *id)
 	}

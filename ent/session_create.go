@@ -21,12 +21,6 @@ type SessionCreate struct {
 	hooks    []Hook
 }
 
-// SetToken sets the "token" field.
-func (sc *SessionCreate) SetToken(s string) *SessionCreate {
-	sc.mutation.SetToken(s)
-	return sc
-}
-
 // SetUserID sets the "user_id" field.
 func (sc *SessionCreate) SetUserID(u uint64) *SessionCreate {
 	sc.mutation.SetUserID(u)
@@ -44,6 +38,12 @@ func (sc *SessionCreate) SetNillableUserID(u *uint64) *SessionCreate {
 // SetCreatedAt sets the "created_at" field.
 func (sc *SessionCreate) SetCreatedAt(t time.Time) *SessionCreate {
 	sc.mutation.SetCreatedAt(t)
+	return sc
+}
+
+// SetID sets the "id" field.
+func (sc *SessionCreate) SetID(s string) *SessionCreate {
+	sc.mutation.SetID(s)
 	return sc
 }
 
@@ -86,9 +86,6 @@ func (sc *SessionCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (sc *SessionCreate) check() error {
-	if _, ok := sc.mutation.Token(); !ok {
-		return &ValidationError{Name: "token", err: errors.New(`ent: missing required field "Session.token"`)}
-	}
 	if _, ok := sc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Session.created_at"`)}
 	}
@@ -106,8 +103,13 @@ func (sc *SessionCreate) sqlSave(ctx context.Context) (*Session, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Session.ID type: %T", _spec.ID.Value)
+		}
+	}
 	sc.mutation.id = &_node.ID
 	sc.mutation.done = true
 	return _node, nil
@@ -116,11 +118,11 @@ func (sc *SessionCreate) sqlSave(ctx context.Context) (*Session, error) {
 func (sc *SessionCreate) createSpec() (*Session, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Session{config: sc.config}
-		_spec = sqlgraph.NewCreateSpec(session.Table, sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(session.Table, sqlgraph.NewFieldSpec(session.FieldID, field.TypeString))
 	)
-	if value, ok := sc.mutation.Token(); ok {
-		_spec.SetField(session.FieldToken, field.TypeString, value)
-		_node.Token = value
+	if id, ok := sc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
 	}
 	if value, ok := sc.mutation.CreatedAt(); ok {
 		_spec.SetField(session.FieldCreatedAt, field.TypeTime, value)
@@ -186,10 +188,6 @@ func (scb *SessionCreateBulk) Save(ctx context.Context) ([]*Session, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

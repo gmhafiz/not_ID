@@ -42,13 +42,13 @@ func (uu *UserUpdate) SetCreatedAt(t time.Time) *UserUpdate {
 }
 
 // SetSessionID sets the "session" edge to the Session entity by ID.
-func (uu *UserUpdate) SetSessionID(id int) *UserUpdate {
+func (uu *UserUpdate) SetSessionID(id string) *UserUpdate {
 	uu.mutation.SetSessionID(id)
 	return uu
 }
 
 // SetNillableSessionID sets the "session" edge to the Session entity by ID if the given value is not nil.
-func (uu *UserUpdate) SetNillableSessionID(id *int) *UserUpdate {
+func (uu *UserUpdate) SetNillableSessionID(id *string) *UserUpdate {
 	if id != nil {
 		uu = uu.SetSessionID(*id)
 	}
@@ -121,7 +121,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.SessionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -134,7 +134,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.SessionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -175,13 +175,13 @@ func (uuo *UserUpdateOne) SetCreatedAt(t time.Time) *UserUpdateOne {
 }
 
 // SetSessionID sets the "session" edge to the Session entity by ID.
-func (uuo *UserUpdateOne) SetSessionID(id int) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetSessionID(id string) *UserUpdateOne {
 	uuo.mutation.SetSessionID(id)
 	return uuo
 }
 
 // SetNillableSessionID sets the "session" edge to the Session entity by ID if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableSessionID(id *int) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetNillableSessionID(id *string) *UserUpdateOne {
 	if id != nil {
 		uuo = uuo.SetSessionID(*id)
 	}
@@ -284,7 +284,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.SessionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -297,7 +297,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.SessionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

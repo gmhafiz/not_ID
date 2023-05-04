@@ -11,15 +11,15 @@ const (
 	// Label holds the string label denoting the session type in the database.
 	Label = "session"
 	// FieldID holds the string denoting the id field in the database.
-	FieldID = "id"
-	// FieldToken holds the string denoting the token field in the database.
-	FieldToken = "token"
+	FieldID = "token"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// UserFieldID holds the string denoting the ID field of the User.
+	UserFieldID = "id"
 	// Table holds the table name of the session in the database.
 	Table = "sessions"
 	// UserTable is the table that holds the user relation/edge.
@@ -34,7 +34,6 @@ const (
 // Columns holds all SQL columns for session fields.
 var Columns = []string{
 	FieldID,
-	FieldToken,
 	FieldUserID,
 	FieldCreatedAt,
 }
@@ -57,11 +56,6 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByToken orders the results by the token field.
-func ByToken(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldToken, opts...).ToFunc()
-}
-
 // ByUserID orders the results by the user_id field.
 func ByUserID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUserID, opts...).ToFunc()
@@ -81,7 +75,7 @@ func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(UserInverseTable, FieldID),
+		sqlgraph.To(UserInverseTable, UserFieldID),
 		sqlgraph.Edge(sqlgraph.O2O, true, UserTable, UserColumn),
 	)
 }

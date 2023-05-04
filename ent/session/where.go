@@ -11,53 +11,58 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.Session {
+func ID(id string) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.Session {
+func IDEQ(id string) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.Session {
+func IDNEQ(id string) predicate.Session {
 	return predicate.Session(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.Session {
+func IDIn(ids ...string) predicate.Session {
 	return predicate.Session(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.Session {
+func IDNotIn(ids ...string) predicate.Session {
 	return predicate.Session(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.Session {
+func IDGT(id string) predicate.Session {
 	return predicate.Session(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.Session {
+func IDGTE(id string) predicate.Session {
 	return predicate.Session(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.Session {
+func IDLT(id string) predicate.Session {
 	return predicate.Session(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.Session {
+func IDLTE(id string) predicate.Session {
 	return predicate.Session(sql.FieldLTE(FieldID, id))
 }
 
-// Token applies equality check predicate on the "token" field. It's identical to TokenEQ.
-func Token(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldToken, v))
+// IDEqualFold applies the EqualFold predicate on the ID field.
+func IDEqualFold(id string) predicate.Session {
+	return predicate.Session(sql.FieldEqualFold(FieldID, id))
+}
+
+// IDContainsFold applies the ContainsFold predicate on the ID field.
+func IDContainsFold(id string) predicate.Session {
+	return predicate.Session(sql.FieldContainsFold(FieldID, id))
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
@@ -68,71 +73,6 @@ func UserID(v uint64) predicate.Session {
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldCreatedAt, v))
-}
-
-// TokenEQ applies the EQ predicate on the "token" field.
-func TokenEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldToken, v))
-}
-
-// TokenNEQ applies the NEQ predicate on the "token" field.
-func TokenNEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldNEQ(FieldToken, v))
-}
-
-// TokenIn applies the In predicate on the "token" field.
-func TokenIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldIn(FieldToken, vs...))
-}
-
-// TokenNotIn applies the NotIn predicate on the "token" field.
-func TokenNotIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldNotIn(FieldToken, vs...))
-}
-
-// TokenGT applies the GT predicate on the "token" field.
-func TokenGT(v string) predicate.Session {
-	return predicate.Session(sql.FieldGT(FieldToken, v))
-}
-
-// TokenGTE applies the GTE predicate on the "token" field.
-func TokenGTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldGTE(FieldToken, v))
-}
-
-// TokenLT applies the LT predicate on the "token" field.
-func TokenLT(v string) predicate.Session {
-	return predicate.Session(sql.FieldLT(FieldToken, v))
-}
-
-// TokenLTE applies the LTE predicate on the "token" field.
-func TokenLTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldLTE(FieldToken, v))
-}
-
-// TokenContains applies the Contains predicate on the "token" field.
-func TokenContains(v string) predicate.Session {
-	return predicate.Session(sql.FieldContains(FieldToken, v))
-}
-
-// TokenHasPrefix applies the HasPrefix predicate on the "token" field.
-func TokenHasPrefix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasPrefix(FieldToken, v))
-}
-
-// TokenHasSuffix applies the HasSuffix predicate on the "token" field.
-func TokenHasSuffix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasSuffix(FieldToken, v))
-}
-
-// TokenEqualFold applies the EqualFold predicate on the "token" field.
-func TokenEqualFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldEqualFold(FieldToken, v))
-}
-
-// TokenContainsFold applies the ContainsFold predicate on the "token" field.
-func TokenContainsFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldContainsFold(FieldToken, v))
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.

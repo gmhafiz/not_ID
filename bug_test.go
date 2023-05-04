@@ -68,14 +68,14 @@ func TestBugMaria(t *testing.T) {
 			assert.Nil(t, err)
 
 			_, err = db.ExecContext(ctx, `
-				CREATE TABLE IF NOT EXISTS sessions
-				(
-					token   VARCHAR(255) PRIMARY KEY,
-					user_id BIGINT UNSIGNED NULL,
-					created_at  datetime NOT NULL,
-					
-					FOREIGN KEY (user_id) REFERENCES users(id)
-				);
+CREATE TABLE IF NOT EXISTS sessions
+(
+	token   VARCHAR(255) PRIMARY KEY,
+	user_id BIGINT UNSIGNED NULL,
+	created_at  datetime NOT NULL,
+	
+	FOREIGN KEY (user_id) REFERENCES users(id)
+);
 			`)
 			assert.Nil(t, err)
 
@@ -111,11 +111,13 @@ func test(t *testing.T, client *ent.Client) {
 
 	client.Session.Delete().ExecX(ctx)
 	client.Session.Create().
-		SetToken("random").
+		SetID("random").
 		SetCreatedAt(time.Now()).
 		ExecX(ctx)
 
-	first, err := client.Debug().Session.Query().Where(session.TokenEQ("random")).First(ctx)
+	first, err := client.Debug().Session.Query().
+		Where(session.IDEQ("random")).
+		First(ctx)
 
 	/*
 		generates wrong query

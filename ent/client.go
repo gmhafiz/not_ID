@@ -244,7 +244,7 @@ func (c *SessionClient) UpdateOne(s *Session) *SessionUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *SessionClient) UpdateOneID(id int) *SessionUpdateOne {
+func (c *SessionClient) UpdateOneID(id string) *SessionUpdateOne {
 	mutation := newSessionMutation(c.config, OpUpdateOne, withSessionID(id))
 	return &SessionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -261,7 +261,7 @@ func (c *SessionClient) DeleteOne(s *Session) *SessionDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *SessionClient) DeleteOneID(id int) *SessionDeleteOne {
+func (c *SessionClient) DeleteOneID(id string) *SessionDeleteOne {
 	builder := c.Delete().Where(session.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -278,12 +278,12 @@ func (c *SessionClient) Query() *SessionQuery {
 }
 
 // Get returns a Session entity by its id.
-func (c *SessionClient) Get(ctx context.Context, id int) (*Session, error) {
+func (c *SessionClient) Get(ctx context.Context, id string) (*Session, error) {
 	return c.Query().Where(session.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *SessionClient) GetX(ctx context.Context, id int) *Session {
+func (c *SessionClient) GetX(ctx context.Context, id string) *Session {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

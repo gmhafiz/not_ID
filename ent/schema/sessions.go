@@ -14,7 +14,9 @@ type Session struct {
 // Fields of the User.
 func (Session) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("token"),
+
+		//field.ID("token"),
+		field.String("id").StorageKey("token"),
 		field.Uint64("user_id").Optional().Nillable(),
 		field.Time("created_at"),
 	}

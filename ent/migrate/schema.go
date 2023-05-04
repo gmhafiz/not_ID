@@ -10,7 +10,6 @@ import (
 var (
 	// SessionsColumns holds the columns for the "sessions" table.
 	SessionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "token", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "user_id", Type: field.TypeUint64, Unique: true, Nullable: true},
@@ -23,7 +22,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "sessions_users_session",
-				Columns:    []*schema.Column{SessionsColumns[3]},
+				Columns:    []*schema.Column{SessionsColumns[2]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
